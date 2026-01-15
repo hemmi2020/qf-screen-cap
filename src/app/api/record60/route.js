@@ -8,7 +8,14 @@ const execAsync = promisify(exec);
 
 // Main page recording with pauses
 async function recordMainPageWithPauses(url, outputPath) {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ 
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage'
+    ]
+  });
   const context = await browser.newContext({
     viewport: { width: 1920, height: 1080 }
   });
@@ -156,7 +163,14 @@ async function recordMainPageWithPauses(url, outputPath) {
 
 // Nav page - manual screenshots for smooth, consistent scrolling
 async function recordNavPageFast(url, outputPath) {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ 
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage'
+    ]
+  });
   const context = await browser.newContext({
     viewport: { width: 1920, height: 1080 }
   });
@@ -273,7 +287,14 @@ export async function POST(request) {
       console.log('🌐 Multi-page mode - extracting nav links...');
       
       // Extract nav links first
-      const browser = await chromium.launch({ headless: true });
+      const browser = await chromium.launch({ 
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage'
+        ]
+      });
       const context = await browser.newContext({
         viewport: { width: 1920, height: 1080 }
       });
