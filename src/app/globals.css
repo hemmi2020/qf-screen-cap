@@ -1,38 +1,39 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@layer base {
+  :root {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
+    --primary: 187 92% 55%;
+    --primary-foreground: 222 47% 6%;
+    --secondary: 222 47% 14%;
+    --muted: 222 47% 12%;
+    --muted-foreground: 215 20% 55%;
+    --accent: 280 70% 60%;
+    --border: 222 47% 18%;
+    --destructive: 0 84% 60%;
+    --radius: 0.75rem;
+  }
 
-:root {
-  --background: 222 47% 6%;
-  --foreground: 210 40% 98%;
-  --card: 222 47% 8%;
-  --card-foreground: 210 40% 98%;
-  --primary: 187 92% 55%;
-  --primary-foreground: 222 47% 6%;
-  --secondary: 222 47% 14%;
-  --muted: 222 47% 12%;
-  --muted-foreground: 215 20% 55%;
-  --accent: 280 70% 60%;
-  --border: 222 47% 18%;
-  --destructive: 0 84% 60%;
-  --radius: 0.75rem;
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  background: hsl(var(--background));
-  color: hsl(var(--foreground));
-  font-family: 'Inter', system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
+@layer components {
 .glass-card {
   background: linear-gradient(135deg, hsl(222 47% 10% / 0.8) 0%, hsl(222 47% 8% / 0.6) 100%);
   backdrop-filter: blur(20px);
@@ -100,4 +101,5 @@ body {
 .btn-gradient:hover {
   transform: scale(1.02);
   box-shadow: 0 10px 30px -10px hsl(187 92% 55% / 0.4);
+}
 }
