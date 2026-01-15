@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx puppeteer browsers install chrome && next build",
     "start": "next start",
-    "lint": "eslint",
-    "postinstall": "npx puppeteer browsers install chrome"
+    "lint": "eslint"
   },
   "dependencies": {
     "@ffmpeg/core": "^0.12.10",
