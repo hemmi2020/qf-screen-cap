@@ -48,12 +48,12 @@ function PayPalSubscribeButton({ planId, planName }) {
       )}
       
       <PayPalButtons
+        fundingSource={undefined}
         style={{
           layout: 'vertical',
-          color: 'blue',
           shape: 'rect',
-          label: 'subscribe',
-          height: 55
+          height: 50,
+          tagline: false,
         }}
         createSubscription={(data, actions) => {
           return actions.subscription.create({
@@ -62,7 +62,6 @@ function PayPalSubscribeButton({ planId, planName }) {
         }}
         onApprove={async (data, actions) => {
           try {
-            // Verify subscription on backend
             const response = await fetch('/api/paypal/verify-subscription-v6', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -75,13 +74,6 @@ function PayPalSubscribeButton({ planId, planName }) {
             const result = await response.json();
             
             if (result.success) {
-              // Store subscription info
-              localStorage.setItem('subscriptionId', data.subscriptionID);
-              localStorage.setItem('subscriptionStatus', 'active');
-              localStorage.setItem('planId', planId);
-              localStorage.setItem('planName', planName);
-              
-              // Redirect to success page
               window.location.href = `/subscription/success?subscription_id=${data.subscriptionID}`;
             } else {
               setError('Failed to verify subscription. Please contact support.');

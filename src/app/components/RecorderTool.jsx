@@ -28,6 +28,13 @@ export default function RecorderTool() {
         body: JSON.stringify({ url: url.trim(), duration: recordDuration, multiPage })
       });
       const data = await response.json();
+      
+      if (data.requiresSubscription) {
+        setError(data.error);
+        document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      
       if (data.success) {
         setRecording(data.video || data.frames || []);
       } else {
@@ -58,6 +65,13 @@ export default function RecorderTool() {
         body: JSON.stringify({ url: cleanUrl, waitTime })
       });
       const data = await response.json();
+      
+      if (data.requiresSubscription) {
+        setError(data.error);
+        document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      
       if (data.success) {
         setScreenshot(data.screenshot);
       } else {

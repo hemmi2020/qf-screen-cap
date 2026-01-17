@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx puppeteer browsers install chrome && next build",
+    "build": "npx puppeteer browsers install chrome && npx prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@ffmpeg/core": "^0.12.10",

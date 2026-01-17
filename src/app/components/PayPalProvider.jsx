@@ -7,6 +7,8 @@ export default function PayPalProvider({ children }) {
     vault: true,
     intent: 'subscription',
     currency: 'CAD',
+    components: 'buttons',
+    enableFunding: 'venmo,card,paylater',
   };
 
   return (

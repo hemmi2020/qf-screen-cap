@@ -1,7 +1,18 @@
 // src/app/api/paypal/verify-subscription-v6/route.js
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return Response.json({ 
+        success: false,
+        error: 'Unauthorized' 
+      }, { status: 401 });
+    }
+
     const { subscriptionId, orderID } = await request.json();
     
     if (!subscriptionId) {
@@ -11,10 +22,8 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    // Get access token
     const accessToken = await getPayPalAccessToken();
     
-    // Get subscription details from PayPal
     const response = await fetch(
       `${getPayPalBaseUrl()}/v1/billing/subscriptions/${subscriptionId}`,
       {
@@ -42,16 +51,20 @@ export async function POST(request) {
       planId: subscriptionData.plan_id
     });
 
-    // TODO: Store in your database
-    // await db.subscription.create({
-    //   subscriptionId: subscriptionData.id,
-    //   userId: session.user.id, // If you have auth
-    //   planId: subscriptionData.plan_id,
-    //   status: subscriptionData.status.toLowerCase(),
-    //   subscriberEmail: subscriptionData.subscriber.email_address,
-    //   createdAt: new Date(),
-    //   nextBillingTime: subscriptionData.billing_info?.next_billing_time
-    // });
+    await prisma.subscription.upsert({
+      where: { userId: session.user.id },
+      update: {
+        status: 'ACTIVE',
+        paypalSubscriptionId: subscriptionData.id,
+        planId: subscriptionData.plan_id,
+      },
+      create: {
+        userId: session.user.id,
+        paypalSubscriptionId: subscriptionData.id,
+        status: 'ACTIVE',
+        planId: subscriptionData.plan_id,
+      }
+    });
     
     return Response.json({ 
       success: true,

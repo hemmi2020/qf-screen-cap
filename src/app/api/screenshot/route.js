@@ -27,6 +27,18 @@ export async function POST(request) {
         error: 'URL is required' 
       }, { status: 400 });
     }
+
+    const subscription = await prisma.subscription.findUnique({
+      where: { userId: session.user.id }
+    });
+
+    if (!subscription || subscription.status !== 'ACTIVE') {
+      return Response.json({ 
+        success: false,
+        error: 'Active subscription required',
+        requiresSubscription: true
+      }, { status: 403 });
+    }
     
     console.log('URL received:', url);
 
