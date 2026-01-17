@@ -1,10 +1,10 @@
 'use client';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { LogOut } from 'lucide-react';
+import { LogOut, Crown } from 'lucide-react';
 import Hero from './components/Hero';
 import RecorderTool from './components/RecorderTool';
 import Features from './components/Features';
@@ -13,12 +13,22 @@ import PricingV6 from './components/PricingV6';
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [subscription, setSubscription] = useState(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
     }
   }, [status, router]);
+
+  useEffect(() => {
+    if (session) {
+      fetch('/api/subscription/status')
+        .then(res => res.json())
+        .then(data => setSubscription(data.subscription))
+        .catch(err => console.error('Failed to fetch subscription:', err));
+    }
+  }, [session]);
 
   if (status === 'loading') {
     return (
@@ -48,6 +58,12 @@ export default function Home() {
             >
               Pricing
             </a>
+            {subscription?.status === 'ACTIVE' && (
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[hsl(187_92%_55%/0.1)] border border-[hsl(187_92%_55%/0.3)]">
+                <Crown className="w-4 h-4 text-[hsl(187_92%_55%)]" />
+                <span className="text-xs font-medium text-[hsl(187_92%_55%)]">Active</span>
+              </div>
+            )}
             <div className="text-right hidden md:block">
               <p className="text-sm font-medium">{session.user?.name || 'User'}</p>
               <p className="text-xs text-[hsl(215_20%_70%)]">{session.user?.email}</p>
