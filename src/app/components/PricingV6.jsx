@@ -22,6 +22,7 @@ const plans = [
     id: 'P-3YJ923863E6832637NFVM6QY', // ← Your Pro Plan ID
     name: 'Pro',
     price: 100.00, // ← Changed to match your $100 CAD
+    interval: 'year',
     icon: Crown,
     color: 'hsl(280_70%_60%)',
     popular: true,
@@ -134,7 +135,7 @@ export default function PricingV6() {
             <div className="mb-8">
               <div className="flex items-baseline gap-2">
                 <span className="text-5xl font-bold">${plan.price}</span>
-                <span className="text-[hsl(215_20%_55%)]">/month</span>
+                <span className="text-[hsl(215_20%_55%)]">/{ plan.interval || 'month'}</span>
               </div>
             </div>
 
