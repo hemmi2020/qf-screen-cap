@@ -8,6 +8,7 @@ import { LogOut } from 'lucide-react';
 import Hero from './components/Hero';
 import RecorderTool from './components/RecorderTool';
 import Features from './components/Features';
+import PricingV6 from './components/PricingV6';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -63,6 +64,9 @@ export default function Home() {
             <RecorderTool />
           </section>
           <Features />
+          <section id="pricing" className="mt-24">
+            <PricingV6 />
+          </section>
         </div>
       </main>
 
