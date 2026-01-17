@@ -42,6 +42,12 @@ export default function Home() {
           </Link>
 
           <div className="flex items-center gap-4">
+            <a 
+              href="#pricing" 
+              className="text-sm font-medium text-[hsl(215_20%_70%)] hover:text-white transition-colors"
+            >
+              Pricing
+            </a>
             <div className="text-right hidden md:block">
               <p className="text-sm font-medium">{session.user?.name || 'User'}</p>
               <p className="text-xs text-[hsl(215_20%_70%)]">{session.user?.email}</p>
