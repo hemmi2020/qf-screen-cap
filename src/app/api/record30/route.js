@@ -3,6 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 const execAsync = promisify(exec);
 
@@ -268,6 +271,14 @@ export async function POST(request) {
   console.log('=== Screen Recording API called ===');
   
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return Response.json({ 
+        success: false,
+        error: 'Unauthorized' 
+      }, { status: 401 });
+    }
+
     const body = await request.json();
     const { url, multiPage = false } = body;
     
@@ -277,6 +288,20 @@ export async function POST(request) {
         error: 'URL is required' 
       }, { status: 400 });
     }
+
+    // Save search to database
+    await prisma.search.create({
+      data: {
+        url,
+        type: 'recording',
+        fps: 30,
+        multiPage,
+        userName: session.user.name || 'Unknown',
+        userEmail: session.user.email,
+        userId: session.user.id
+      }
+    });
+    console.log('Search saved to database');
     
     const tempDir = path.join(process.cwd(), 'temp');
     if (!fs.existsSync(tempDir)) {

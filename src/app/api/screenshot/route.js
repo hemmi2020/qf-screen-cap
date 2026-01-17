@@ -1,10 +1,21 @@
 import puppeteer from 'puppeteer';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(request) {
   console.log('=== Screenshot API called ===');
   
   let browser;
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return Response.json({ 
+        success: false,
+        error: 'Unauthorized' 
+      }, { status: 401 });
+    }
+
     const body = await request.json();
     console.log('Request body:', body);
     const { url, waitTime = 10000 } = body;
@@ -18,6 +29,18 @@ export async function POST(request) {
     }
     
     console.log('URL received:', url);
+
+    // Save search to database
+    await prisma.search.create({
+      data: {
+        url,
+        type: 'screenshot',
+        userName: session.user.name || 'Unknown',
+        userEmail: session.user.email,
+        userId: session.user.id
+      }
+    });
+    console.log('Search saved to database');
     
     browser = await puppeteer.launch({ 
       headless: true,
