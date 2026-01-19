@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx puppeteer browsers install chrome && npx prisma generate && next build",
-    "start": "next start",
+    "build": "npx puppeteer browsers install chrome && npx playwright install chromium && npx prisma generate && next build",
+    "start": "next start -p 5600",
     "lint": "eslint",
     "postinstall": "npx prisma generate"
   },
