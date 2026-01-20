@@ -28,6 +28,7 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
+    // BYPASS FOR LOCAL DEV - Comment out for production
     const subscription = await prisma.subscription.findUnique({
       where: { userId: session.user.id }
     });

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { LogOut, Crown } from 'lucide-react';
+import { LogOut, Crown, Shield } from 'lucide-react';
 import Hero from './components/Hero';
 import RecorderTool from './components/RecorderTool';
 import Features from './components/Features';
@@ -14,6 +14,7 @@ export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [subscription, setSubscription] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -27,6 +28,11 @@ export default function Home() {
         .then(res => res.json())
         .then(data => setSubscription(data.subscription))
         .catch(err => console.error('Failed to fetch subscription:', err));
+      
+      fetch('/api/admin/verify')
+        .then(res => res.json())
+        .then(data => setIsAdmin(data.isAdmin))
+        .catch(err => console.error('Failed to verify admin:', err));
     }
   }, [session]);
 
@@ -58,6 +64,15 @@ export default function Home() {
             >
               Pricing
             </a>
+            {isAdmin && (
+              <Link 
+                href="/admin" 
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[hsl(280_70%_70%/0.1)] border border-[hsl(280_70%_70%/0.3)] hover:bg-[hsl(280_70%_70%/0.2)] transition-colors"
+              >
+                <Shield className="w-4 h-4 text-[hsl(280_70%_70%)]" />
+                <span className="text-xs font-medium text-[hsl(280_70%_70%)]">Admin Panel</span>
+              </Link>
+            )}
             {subscription?.status === 'ACTIVE' && (
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[hsl(187_92%_55%/0.1)] border border-[hsl(187_92%_55%/0.3)]">
                 <Crown className="w-4 h-4 text-[hsl(187_92%_55%)]" />
