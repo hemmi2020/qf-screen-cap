@@ -37,6 +37,7 @@ export default function RecorderTool({ onToolClick, isLoggedIn }) {
       
       if (data.requiresSubscription) {
         setError(data.error + ` (${data.trialCount || 0}/3 trials used)`);
+        setRecordingLoading(false); // Stop loading immediately
         document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
         return;
       }
@@ -48,8 +49,9 @@ export default function RecorderTool({ onToolClick, isLoggedIn }) {
       }
     } catch (err) {
       setError('Network error: ' + err.message);
+    } finally {
+      setRecordingLoading(false); // Always stop loading
     }
-    setRecordingLoading(false);
   };
 
   const handleSubmit = async (e) => {
@@ -80,6 +82,7 @@ export default function RecorderTool({ onToolClick, isLoggedIn }) {
       
       if (data.requiresSubscription) {
         setError(data.error + ` (${data.trialCount || 0}/3 trials used)`);
+        setLoading(false); // Stop loading immediately
         document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
         return;
       }
@@ -91,8 +94,9 @@ export default function RecorderTool({ onToolClick, isLoggedIn }) {
       }
     } catch (err) {
       setError('Network error: ' + err.message);
+    } finally {
+      setLoading(false); // Always stop loading
     }
-    setLoading(false);
   };
 
   return (
