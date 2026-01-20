@@ -28,17 +28,35 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    // BYPASS FOR LOCAL DEV - Comment out for production
+    // Check subscription or trial count
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { trialCount: true }
+    });
+
     const subscription = await prisma.subscription.findUnique({
       where: { userId: session.user.id }
     });
 
-    if (!subscription || subscription.status !== 'ACTIVE') {
+    // Allow if has active subscription OR has trials left
+    const hasActiveSubscription = subscription && subscription.status === 'ACTIVE';
+    const hasTrialsLeft = user.trialCount < 3;
+
+    if (!hasActiveSubscription && !hasTrialsLeft) {
       return Response.json({ 
         success: false,
-        error: 'Active subscription required',
-        requiresSubscription: true
+        error: 'Trial limit reached. Please subscribe to continue.',
+        requiresSubscription: true,
+        trialCount: user.trialCount
       }, { status: 403 });
+    }
+
+    // Increment trial count if not subscribed
+    if (!hasActiveSubscription) {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { trialCount: { increment: 1 } }
+      });
     }
     
     console.log('URL received:', url);

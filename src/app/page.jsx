@@ -1,6 +1,5 @@
 'use client';
 import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,18 +8,14 @@ import Hero from './components/Hero';
 import RecorderTool from './components/RecorderTool';
 import Features from './components/Features';
 import PricingV6 from './components/PricingV6';
+import AuthModal from './components/AuthModal';
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const router = useRouter();
   const [subscription, setSubscription] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-    }
-  }, [status, router]);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
 
   useEffect(() => {
     if (session) {
@@ -36,17 +31,11 @@ export default function Home() {
     }
   }, [session]);
 
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 rounded-full border-4 border-[hsl(187_92%_55%/0.2)] border-t-[hsl(187_92%_55%)] animate-spin" />
-      </div>
-    );
-  }
-
-  if (!session) {
-    return null;
-  }
+  const handleToolClick = () => {
+    if (!session) {
+      setShowAuthModal(true);
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -64,32 +53,51 @@ export default function Home() {
             >
               Pricing
             </a>
-            {isAdmin && (
-              <Link 
-                href="/admin" 
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[hsl(280_70%_70%/0.1)] border border-[hsl(280_70%_70%/0.3)] hover:bg-[hsl(280_70%_70%/0.2)] transition-colors"
-              >
-                <Shield className="w-4 h-4 text-[hsl(280_70%_70%)]" />
-                <span className="text-xs font-medium text-[hsl(280_70%_70%)]">Admin Panel</span>
-              </Link>
+            {session ? (
+              <>
+                {isAdmin && (
+                  <Link 
+                    href="/admin" 
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[hsl(280_70%_70%/0.1)] border border-[hsl(280_70%_70%/0.3)] hover:bg-[hsl(280_70%_70%/0.2)] transition-colors"
+                  >
+                    <Shield className="w-4 h-4 text-[hsl(280_70%_70%)]" />
+                    <span className="text-xs font-medium text-[hsl(280_70%_70%)]">Admin Panel</span>
+                  </Link>
+                )}
+                {subscription?.status === 'ACTIVE' && (
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[hsl(187_92%_55%/0.1)] border border-[hsl(187_92%_55%/0.3)]">
+                    <Crown className="w-4 h-4 text-[hsl(187_92%_55%)]" />
+                    <span className="text-xs font-medium text-[hsl(187_92%_55%)]">Active</span>
+                  </div>
+                )}
+                <div className="text-right hidden md:block">
+                  <p className="text-sm font-medium">{session.user?.name || 'User'}</p>
+                  <p className="text-xs text-[hsl(215_20%_70%)]">{session.user?.email}</p>
+                </div>
+                <button
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[hsl(222_47%_22%)] border border-[hsl(222_47%_32%)] hover:border-[hsl(0_84%_60%)] text-[hsl(0_84%_60%)] transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="hidden md:inline">Sign Out</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => { setAuthMode('login'); setShowAuthModal(true); }}
+                  className="px-4 py-2 text-sm font-medium text-white hover:text-[hsl(187_92%_55%)] transition-colors"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => { setAuthMode('signup'); setShowAuthModal(true); }}
+                  className="px-4 py-2 rounded-lg bg-[hsl(187_92%_55%)] text-white font-medium hover:bg-[hsl(187_92%_60%)] transition-colors"
+                >
+                  Sign Up
+                </button>
+              </>
             )}
-            {subscription?.status === 'ACTIVE' && (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[hsl(187_92%_55%/0.1)] border border-[hsl(187_92%_55%/0.3)]">
-                <Crown className="w-4 h-4 text-[hsl(187_92%_55%)]" />
-                <span className="text-xs font-medium text-[hsl(187_92%_55%)]">Active</span>
-              </div>
-            )}
-            <div className="text-right hidden md:block">
-              <p className="text-sm font-medium">{session.user?.name || 'User'}</p>
-              <p className="text-xs text-[hsl(215_20%_70%)]">{session.user?.email}</p>
-            </div>
-            <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[hsl(222_47%_22%)] border border-[hsl(222_47%_32%)] hover:border-[hsl(0_84%_60%)] text-[hsl(0_84%_60%)] transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden md:inline">Sign Out</span>
-            </button>
           </div>
         </div>
       </header>
@@ -98,7 +106,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <Hero />
           <section id="tool" className="mb-24">
-            <RecorderTool />
+            <RecorderTool onToolClick={handleToolClick} isLoggedIn={!!session} />
           </section>
           <Features />
           <section id="pricing" className="mt-24">
@@ -116,6 +124,14 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {showAuthModal && (
+        <AuthModal 
+          mode={authMode} 
+          onClose={() => setShowAuthModal(false)}
+          onSwitchMode={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
+        />
+      )}
     </div>
   );
 }

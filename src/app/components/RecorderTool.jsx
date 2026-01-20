@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Camera, Video, Download, Loader2, Globe, Clock, Layers, Zap } from 'lucide-react';
 
-export default function RecorderTool() {
+export default function RecorderTool({ onToolClick, isLoggedIn }) {
   const [url, setUrl] = useState('');
   const [screenshot, setScreenshot] = useState('');
   const [recording, setRecording] = useState([]);
@@ -16,6 +16,12 @@ export default function RecorderTool() {
 
   const handleRecord = async (e) => {
     e.preventDefault();
+    
+    if (!isLoggedIn) {
+      onToolClick();
+      return;
+    }
+    
     setRecordingLoading(true);
     setError('');
     setRecording([]);
@@ -30,7 +36,7 @@ export default function RecorderTool() {
       const data = await response.json();
       
       if (data.requiresSubscription) {
-        setError(data.error);
+        setError(data.error + ` (${data.trialCount || 0}/3 trials used)`);
         document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
         return;
       }
@@ -48,6 +54,12 @@ export default function RecorderTool() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!isLoggedIn) {
+      onToolClick();
+      return;
+    }
+    
     setLoading(true);
     setError('');
     setScreenshot('');
@@ -67,7 +79,7 @@ export default function RecorderTool() {
       const data = await response.json();
       
       if (data.requiresSubscription) {
-        setError(data.error);
+        setError(data.error + ` (${data.trialCount || 0}/3 trials used)`);
         document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
         return;
       }

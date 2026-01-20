@@ -20,6 +20,7 @@ model User {
   password     String
   name         String?
   role         String        @default("user") // "user" or "admin"
+  trialCount   Int           @default(0) // Track free trial usage
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   sessions     Session[]
