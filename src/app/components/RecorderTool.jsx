@@ -35,14 +35,10 @@ export default function RecorderTool({ onToolClick, isLoggedIn }) {
       });
       const data = await response.json();
       
-      // Check for trial limit or subscription requirement
       if (!response.ok || data.requiresSubscription) {
         setError(data.error + (data.trialCount ? ` (${data.trialCount}/3 trials used)` : ''));
         document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
-        return;
-      }
-      
-      if (data.success) {
+      } else if (data.success) {
         setRecording(data.video || data.frames || []);
       } else {
         setError(data.error || 'Failed to record');
@@ -80,14 +76,10 @@ export default function RecorderTool({ onToolClick, isLoggedIn }) {
       });
       const data = await response.json();
       
-      // Check for trial limit or subscription requirement
       if (!response.ok || data.requiresSubscription) {
         setError(data.error + (data.trialCount ? ` (${data.trialCount}/3 trials used)` : ''));
         document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
-        return;
-      }
-      
-      if (data.success) {
+      } else if (data.success) {
         setScreenshot(data.screenshot);
       } else {
         setError(data.error || 'Failed to capture screenshot');
