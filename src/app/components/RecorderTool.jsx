@@ -35,9 +35,9 @@ export default function RecorderTool({ onToolClick, isLoggedIn }) {
       });
       const data = await response.json();
       
-      if (data.requiresSubscription) {
-        setError(data.error + ` (${data.trialCount || 0}/3 trials used)`);
-        setRecordingLoading(false); // Stop loading immediately
+      // Check for trial limit or subscription requirement
+      if (!response.ok || data.requiresSubscription) {
+        setError(data.error + (data.trialCount ? ` (${data.trialCount}/3 trials used)` : ''));
         document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
         return;
       }
@@ -50,7 +50,7 @@ export default function RecorderTool({ onToolClick, isLoggedIn }) {
     } catch (err) {
       setError('Network error: ' + err.message);
     } finally {
-      setRecordingLoading(false); // Always stop loading
+      setRecordingLoading(false);
     }
   };
 
@@ -80,9 +80,9 @@ export default function RecorderTool({ onToolClick, isLoggedIn }) {
       });
       const data = await response.json();
       
-      if (data.requiresSubscription) {
-        setError(data.error + ` (${data.trialCount || 0}/3 trials used)`);
-        setLoading(false); // Stop loading immediately
+      // Check for trial limit or subscription requirement
+      if (!response.ok || data.requiresSubscription) {
+        setError(data.error + (data.trialCount ? ` (${data.trialCount}/3 trials used)` : ''));
         document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
         return;
       }
@@ -95,7 +95,7 @@ export default function RecorderTool({ onToolClick, isLoggedIn }) {
     } catch (err) {
       setError('Network error: ' + err.message);
     } finally {
-      setLoading(false); // Always stop loading
+      setLoading(false);
     }
   };
 
